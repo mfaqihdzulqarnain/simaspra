@@ -114,6 +114,7 @@ class AsetadminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make(),
             ])
+            ->spa()
             ->authMiddleware([
                 Authenticate::class,
             ]);
