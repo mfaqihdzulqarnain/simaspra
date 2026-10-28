@@ -1,0 +1,57 @@
+@import "@fontsource-variable/inter";
+@import "tailwindcss";
+
+/* Beri tahu Tailwind di mana mencari nama kelas */
+@source "../views/**/*.blade.php";
+
+@theme {
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+    /* Warna merek — dipakai sebagai bg-navy, text-navy, border-line, dst. */
+    --color-navy: #14315c;
+    --color-navy-600: #1e4079;
+    --color-sky-brand: #2e6be6;
+    --color-teal-brand: #0fa6a0;
+    --color-ink: #0f1e33;
+    --color-paper: #f6f8fc;
+    --color-soft: #eef3fb;
+    --color-line: #e4eaf2;
+}
+
+/* Animasi kustom */
+@keyframes grow {
+    from {
+        height: 0;
+    }
+}
+
+.bar {
+    animation: grow 1s ease both;
+}
+
+@keyframes pulseDot {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+.pulse {
+    animation: pulseDot 1.6s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .bar,
+    .pulse {
+        animation: none;
+    }
+    #backToTop {
+        transition: none;
+    }
+}
