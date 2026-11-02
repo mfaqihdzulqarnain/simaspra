@@ -12,7 +12,7 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\Auth;
+// use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,7 +31,7 @@ class ListAssets extends ListRecords
                 ->modalWidth('lg')
                 ->modalHeading('Impor Data Aset')
                 ->modalSubmitActionLabel('Mulai Impor')
-                ->visible(fn () => Auth::user()?->hasAnyRole(['kabag_sarpras', 'super_admin']))
+                ->visible(fn() => AssetResource::canCreate())
                 ->schema([
                     Placeholder::make('panduan')
                         ->hiddenLabel()

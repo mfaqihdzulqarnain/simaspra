@@ -41,7 +41,8 @@ Route::get('/cetak/sewa/{roomBooking}/kuitansi', [RentalReceiptController::class
 
 Route::get('/templat/aset', function () {
     abort_unless(auth()->check(), 401);
-    abort_unless(auth()->user()->hasAnyRole(['kabag_sarpras', 'super_admin']), 403);
+    // Sejalan dengan tombol Impor Excel di Daftar Aset
+    abort_unless(\App\Filament\Resources\Assets\AssetResource::canCreate(), 403);
 
     return Excel::download(
         new AssetTemplateExport,
