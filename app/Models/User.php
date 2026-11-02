@@ -182,4 +182,20 @@ class User extends Authenticatable implements FilamentUser
 
         return true;
     }
+
+    protected static function booted(): void
+    {
+        // Akun admin utama tidak boleh dihapus atau dinonaktifkan, dari mana pun
+        static::deleting(function (self $user) {
+            if ((int) $user->getKey() === 1) {
+                throw new \RuntimeException('Akun admin utama tidak dapat dihapus.');
+            }
+        });
+
+        static::updating(function (self $user) {
+            if ((int) $user->getKey() === 1 && ! $user->is_active) {
+                $user->is_active = true;
+            }
+        });
+    }
 }
