@@ -3,11 +3,14 @@
 namespace App\Filament\Resources\Users\Tables;
 
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -16,13 +19,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UsersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with([
+            ->modifyQueryUsing(fn(Builder $query) => $query->with([
                 'unit:id,name',
                 'roles:id,name',
             ]))
@@ -32,7 +37,7 @@ class UsersTable
                     ->searchable()
                     ->sortable()
                     ->weight('medium')
-                    ->description(fn (User $record) => $record->position),
+                    ->description(fn(User $record) => $record->position),
 
                 TextColumn::make('email')
                     ->label('Email')
@@ -51,7 +56,7 @@ class UsersTable
                     ->badge()
                     ->separator(',')
                     ->placeholder('Belum ada peran')
-                    ->color(fn (?string $state) => $state ? 'primary' : 'warning'),
+                    ->color(fn(?string $state) => $state ? 'primary' : 'warning'),
 
                 TextColumn::make('last_login_at')
                     ->label('Terakhir Masuk')
@@ -83,30 +88,50 @@ class UsersTable
             ])
             ->defaultSort('name')
             ->recordActions([
-                \Filament\Actions\Action::make('reset_sandi')
-                ->label('Reset Sandi')
-                ->icon(\Filament\Support\Icons\Heroicon::OutlinedKey)
-                ->color('warning')
-                ->requiresConfirmation()
-                ->modalHeading('Kembalikan Kata Sandi')
-                ->modalDescription(fn (User $record) => 'Kata sandi '
-                    . $record->name . ' akan dikembalikan menjadi '
-                    . ($record->identity_number ?? 'nomor identitasnya')
-                    . '. Beri tahu yang bersangkutan untuk segera menggantinya.')
-                ->modalSubmitActionLabel('Reset Sekarang')
-                ->visible(fn (User $record) => filled($record->identity_number)
-                    && Auth::user()?->hasAnyRole(['super_admin', 'kabag_sarpras']))
-                ->action(function (User $record) {
-                    $berhasil = $record->resetPasswordToIdentity();
+                Action::make('reset_sandi')
+                    ->label('Reset Sandi')
+                    ->icon(Heroicon::OutlinedKey)
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn(User $record) => 'Reset Sandi: ' . $record->name)
+                    ->modalDescription(fn(User $record) => filled($record->nim) || filled($record->nip)
+                        ? 'Kata sandi dikembalikan ke NIM/NIP. Minta pengguna segera menggantinya.'
+                        : 'Akun ini tidak punya NIM maupun NIP, jadi isi kata sandi baru secara manual.')
+                    ->modalSubmitActionLabel('Reset')
+                    // Isian hanya muncul bila tidak ada NIM/NIP yang bisa dipakai
+                    ->schema(fn(User $record) => filled($record->nim) || filled($record->nip) ? [] : [
+                        TextInput::make('password')
+                            ->label('Kata Sandi Baru')
+                            ->password()
+                            ->revealable()
+                            ->required()
+                            ->minLength(8)
+                            ->default(fn() => Str::password(12, symbols: false))
+                            ->helperText('Minimal 8 karakter. Catat sebelum menyimpan.'),
+                    ])
+                    // Reset akun sendiri lewat menu Profil, bukan dari sini
+                    ->visible(fn(User $record) => $record->getKey() !== Auth::id()
+                        && Auth::user()?->hasAnyRole(['kabag_sarpras', 'super_admin']))
+                    ->action(function (User $record, array $data) {
+                        $sandi = $record->nim ?: ($record->nip ?: ($data['password'] ?? null));
 
-                    \Filament\Notifications\Notification::make()
-                        ->status($berhasil ? 'success' : 'danger')
-                        ->title($berhasil ? 'Kata sandi direset' : 'Gagal')
-                        ->body($berhasil
-                            ? 'Kini sama dengan ' . $record->identity_number
-                            : 'Pengguna belum punya NIM atau NIP.')
-                        ->send();
-                }),
+                        if (blank($sandi)) {
+                            Notification::make()->danger()->title('Kata sandi baru wajib diisi')->send();
+
+                            return;
+                        }
+
+                        $record->forceFill(['password' => Hash::make($sandi)])->save();
+
+                        Notification::make()
+                            ->success()
+                            ->title('Kata sandi direset')
+                            ->body(filled($record->nim) || filled($record->nip)
+                                ? 'Kembali ke ' . (filled($record->nim) ? 'NIM' : 'NIP') . '. Minta pengguna segera menggantinya.'
+                                : 'Kata sandi baru: ' . $sandi . ' — catat sekarang, pesan ini tidak tersimpan.')
+                            ->persistent()
+                            ->send();
+                    }),
                 EditAction::make()->label(''),
             ])
             ->toolbarActions([
@@ -118,10 +143,10 @@ class UsersTable
                         ->requiresConfirmation()
                         ->modalHeading('Nonaktifkan Akun')
                         ->modalDescription('Akun tidak bisa masuk sistem, tapi seluruh riwayatnya tetap tersimpan.')
-                        ->visible(fn () => Auth::user()?->hasAnyRole(['super_admin', 'kabag_sarpras']))
+                        ->visible(fn() => Auth::user()?->hasAnyRole(['super_admin', 'kabag_sarpras']))
                         ->action(function (Collection $records) {
                             // Cegah menonaktifkan akun sendiri
-                            $sasaran = $records->reject(fn (User $u) => $u->getKey() === Auth::id());
+                            $sasaran = $records->reject(fn(User $u) => $u->getKey() === Auth::id());
 
                             $sasaran->each->update(['is_active' => false]);
 
@@ -137,7 +162,7 @@ class UsersTable
                         ->icon('heroicon-m-lock-open')
                         ->color('success')
                         ->requiresConfirmation()
-                        ->visible(fn () => Auth::user()?->hasAnyRole(['super_admin', 'kabag_sarpras']))
+                        ->visible(fn() => Auth::user()?->hasAnyRole(['super_admin', 'kabag_sarpras']))
                         ->action(function (Collection $records) {
                             $records->each->update(['is_active' => true]);
 
