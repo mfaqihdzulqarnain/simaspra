@@ -60,7 +60,7 @@ class ViewAsset extends ViewRecord
                         TextEntry::make('condition')->label('Kondisi')->badge(),
                         TextEntry::make('status')->label('Status')->badge(),
                         TextEntry::make('year_acquired')->label('Tahun'),
-                        TextEntry::make('acquisition_value')->label('Nilai')->money('IDR')->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.')),
+                        TextEntry::make('acquisition_value')->label('Nilai')->money('IDR')->formatStateUsing(fn ($state) => 'Rp '.number_format((float) $state, 0, ',', '.'))->visible(fn() => Asset::bolehLihatNilai()),
                         TextEntry::make('serial_number')->label('Nomor Seri')->placeholder('—'),
                         TextEntry::make('brand')->label('Merek')->placeholder('—'),
                         TextEntry::make('model')->label('Model')->placeholder('—'),

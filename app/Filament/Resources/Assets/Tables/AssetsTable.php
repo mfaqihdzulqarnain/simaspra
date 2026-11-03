@@ -112,6 +112,7 @@ class AssetsTable
                     ->formatStateUsing(fn ($state) => Sapra::rupiahRingkas($state))
                     ->tooltip(fn ($state) => Sapra::rupiah($state))
                     // ->alignEnd()
+                    ->visible(fn() => Asset::bolehLihatNilai())
                     ->sortable(),
 
                 IconColumn::make('is_loanable')

@@ -48,7 +48,8 @@ class AssetInfolist
                 TextEntry::make('acquisition_source')
                     ->badge(),
                 TextEntry::make('acquisition_value')
-                    ->numeric(),
+                    ->numeric()
+                    ->visible(fn() => Asset::bolehLihatNilai()),
                 TextEntry::make('useful_life_years')
                     ->numeric()
                     ->placeholder('-'),

@@ -32,6 +32,8 @@ class Asset extends Model implements HasMedia
     use LogsActivity;
     use SoftDeletes;
 
+    public const PERAN_KATALOG = ['dosen', 'mahasiswa', 'laboran', 'teknisi', 'staf_ruang'];
+
     protected $fillable = [
         'name',
         'quantity',
@@ -256,21 +258,20 @@ class Asset extends Model implements HasMedia
      */
     public static function applyUnitVisibility(Builder $query, User $user): bool
     {
-        if (! $user->hasRole('laboran')) {
-            return false;
-        }
-
-        $labIds = $user->laboratoryIds();
-
-        if (empty($labIds)) {
-            $query->whereRaw('1 = 0');
-
+        // Peran pemakai: seluruh aset terlihat, agar bisa memilih alat saat meminjam
+        if ($user->hasAnyRole(self::PERAN_KATALOG)) {
             return true;
         }
 
-        $query->whereHas('room', fn (Builder $q) => $q->whereIn('laboratory_id', $labIds));
+        return false;   // peran lain memakai penyaringan unit biasa
+    }
 
-        return true;
+    /** Nilai perolehan hanya untuk pengelola, bukan peran pemakai */
+    public static function bolehLihatNilai(?User $user = null): bool
+    {
+        $user ??= auth()->user();
+
+        return $user && ! $user->hasAnyRole(self::PERAN_KATALOG);
     }
 
     /* ------------------------------- Method -------------------------------- */
