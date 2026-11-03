@@ -38,8 +38,6 @@ class RoomsTable
                     ->sortable()
                     ->description(fn(Room $record) => $record->building?->name),
 
-                TextColumn::make('floor')->label('Lantai')->alignCenter()->sortable(),
-
                 TextColumn::make('unit.name')
                     ->label('Unit / Prodi')
                     // ->placeholder('—')
@@ -48,7 +46,7 @@ class RoomsTable
                     // ->searchable(query: fn(Builder $query, string $search) => $query
                     //     ->whereHas('unit', fn($q) => $q->where('name', 'like', "%{$search}%"))
                     //     ->orWhereHas('laboratory', fn($q) => $q->where('name', 'like', "%{$search}%")))
-                    ->description(fn(Room $record) => $record->floor ?? '—')
+                    ->description(fn(Room $record) => 'Lokasi Lantai ' . ($record->floor ?? '—'))
                     ->sortable()
                     ->toggleable(),
 
