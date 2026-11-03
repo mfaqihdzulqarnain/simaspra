@@ -86,6 +86,13 @@ class Consumable extends Model
             ->whereColumn('current_stock', '<=', 'min_stock');
     }
 
+    /** Barang ini sedang di bawah stok minimum (khusus habis pakai) */
+    public function isLowStock(): bool
+    {
+        return $this->type === ConsumableType::HabisPakai
+            && (float) $this->current_stock <= (float) $this->min_stock;
+    }
+
     public function scopeLoanable(Builder $query): Builder
     {
         return $query->where('type', ConsumableType::AlatMassal)
