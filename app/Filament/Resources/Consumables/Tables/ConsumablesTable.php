@@ -68,7 +68,8 @@ class ConsumablesTable
                         return $total.' '.$record->unit_of_measure;
                     })
                     ->badge()
-                    ->color(fn (Consumable $record) => $record->is_low ? 'danger' : 'success')
+                    // Merah hanya untuk habis pakai di bawah minimum
+                    ->color(fn(Consumable $record) => $record->isLowStock() ? 'danger' : 'success')
                     ->sortable(),
 
                 TextColumn::make('on_loan')

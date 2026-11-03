@@ -118,7 +118,14 @@ class ConsumableForm
                         ->minValue(0)
                         ->step(0.01)
                         ->default(0)
-                        ->required(),
+                        ->required()
+                        ->visible(function (Get $get) {
+                            $v = $get('type');
+
+                            return ($v instanceof ConsumableType ? $v->value : $v)
+                                === ConsumableType::HabisPakai->value;
+                        })
+                        ->helperText('Sistem memberi peringatan saat stok mencapai angka ini. Tidak berlaku untuk alat massal.'),
 
                     TextInput::make('unit_price')
                         ->label('Harga Satuan')

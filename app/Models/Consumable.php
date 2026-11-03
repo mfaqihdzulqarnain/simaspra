@@ -74,10 +74,16 @@ class Consumable extends Model
         return $query->where('is_active', true);
     }
 
+    /**
+     * Stok menipis hanya berlaku untuk barang habis pakai, karena stoknya
+     * berkurang permanen saat dipakai. Alat massal keluar lalu kembali,
+     * jadi stok kecil bukan tanda hampir habis.
+     */
     public function scopeLowStock(Builder $query): Builder
     {
-        return $query->whereColumn('current_stock', '<=', 'min_stock')
-            ->where('is_active', true);
+        return $query
+            ->where('type', ConsumableType::HabisPakai)
+            ->whereColumn('current_stock', '<=', 'min_stock');
     }
 
     public function scopeLoanable(Builder $query): Builder
