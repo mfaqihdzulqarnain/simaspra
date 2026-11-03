@@ -296,6 +296,39 @@
         kepada Bagian Sarana dan Prasarana.
     </p>
 
+    @if ($consumables->isNotEmpty())
+        <h2 style="font-size:10pt;margin:14pt 0 4pt">Barang &amp; Alat Massal</h2>
+        <table class="data">
+            <thead>
+                <tr>
+                    <th style="width:20pt">No</th>
+                    <th style="width:70pt">Kode</th>
+                    <th>Nama Barang</th>
+                    <th style="width:70pt">Jenis</th>
+                    <th style="width:60pt">Stok</th>
+                    <th style="width:80pt">Harga Satuan</th>
+                    <th style="width:90pt">Nilai</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($consumables as $i => $c)
+                    <tr>
+                        <td class="c">{{ $i + 1 }}</td>
+                        <td>{{ $c->code }}</td>
+                        <td>{{ $c->name }}</td>
+                        <td class="c">{{ $c->type?->getLabel() }}</td>
+                        <td class="c">{{ $c->current_stock }} {{ $c->unit_of_measure }}</td>
+                        <td class="r">
+                            {{ $c->unit_price ? 'Rp' . number_format((float) $c->unit_price, 0, ',', '.') : '—' }}</td>
+                        <td class="r">
+                            {{ $c->unit_price ? 'Rp' . number_format((float) $c->unit_price * (float) $c->current_stock, 0, ',', '.') : '—' }}
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+
     <table class="ttd">
         <tr>
             <td>

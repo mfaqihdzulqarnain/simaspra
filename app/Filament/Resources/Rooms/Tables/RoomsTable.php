@@ -22,7 +22,7 @@ class RoomsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with([
+            ->modifyQueryUsing(fn(Builder $query) => $query->with([
                 'building:id,name',
                 'unit:id,name',
                 'picUser:id,name',
@@ -35,7 +35,7 @@ class RoomsTable
                     ->label('Nama Ruang')
                     ->searchable()
                     ->sortable()
-                    ->description(fn (Room $record) => $record->building?->name),
+                    ->description(fn(Room $record) => $record->building?->name),
 
                 TextColumn::make('floor')->label('Lantai')->alignCenter()->sortable(),
 
@@ -86,22 +86,22 @@ class RoomsTable
                     ->label('Jadwal')
                     ->icon(Heroicon::OutlinedCalendarDays)
                     ->color('gray')
-                    ->visible(fn (Room $record) => $record->is_bookable && JadwalRuang::canAccess())
-                    ->url(fn (Room $record) => JadwalRuang::getUrl(['ruang' => $record->getKey()])),
+                    ->visible(fn(Room $record) => $record->is_bookable && JadwalRuang::canAccess())
+                    ->url(fn(Room $record) => JadwalRuang::getUrl(['ruang' => $record->getKey()])),
 
                 ActionGroup::make([
                     Action::make('halaman_ruang')
                         ->label('Buka Halaman Ruang')
                         ->icon(Heroicon::OutlinedGlobeAlt)
-                        ->url(fn (Room $record) => $record->public_code ? $record->public_url : null)
-                        ->disabled(fn (Room $record) => blank($record->public_code))
+                        ->url(fn(Room $record) => $record->public_code ? $record->public_url : null)
+                        ->disabled(fn(Room $record) => blank($record->public_code))
                         ->openUrlInNewTab(),
 
                     Action::make('cetak_qr_ruang')
                         ->label('Cetak QR Ruang')
                         ->icon(Heroicon::OutlinedQrCode)
-                        ->url(fn (Room $record) => $record->public_code ? route('room.qr.print', $record) : null)
-                        ->disabled(fn (Room $record) => blank($record->public_code))
+                        ->url(fn(Room $record) => $record->public_code ? route('room.qr.print', $record) : null)
+                        ->disabled(fn(Room $record) => blank($record->public_code))
                         ->openUrlInNewTab(),
                 ])
                     ->label('QR')
@@ -114,10 +114,19 @@ class RoomsTable
                     ->label('Cetak KIR')
                     ->icon(Heroicon::OutlinedPrinter)
                     ->color('gray')
-                    ->url(fn (Room $record) => $record->public_code
+                    ->url(fn(Room $record) => $record->public_code
                         ? route('kir.print', $record)
                         : null)
-                    ->disabled(fn (Room $record) => blank($record->public_code))
+                    ->disabled(fn(Room $record) => blank($record->public_code))
+                    // Sejalan dengan pemeriksaan di KirController
+                    ->visible(fn(Room $record) => Auth::user()?->canSeeAllUnits()
+                        || (int) $record->unit_id === (int) Auth::user()?->unit_id
+                        || (int) $record->pic_user_id === (int) Auth::id()
+                        || ($record->laboratory_id && in_array(
+                            (int) $record->laboratory_id,
+                            array_map('intval', Auth::user()?->laboratoryIds() ?? []),
+                            true,
+                        )))
                     ->openUrlInNewTab(),
                 EditAction::make()->label(''),
             ])
