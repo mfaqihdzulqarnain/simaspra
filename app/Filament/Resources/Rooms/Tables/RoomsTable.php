@@ -40,9 +40,16 @@ class RoomsTable
 
                 TextColumn::make('floor')->label('Lantai')->alignCenter()->sortable(),
 
-                TextColumn::make('unit.name')->label('Unit')->placeholder('—')->toggleable(),
-
-                TextColumn::make('laboratory.name')->label('Lab')->placeholder('—')->toggleable(),
+                TextColumn::make('unit.name')
+                    ->label('Unit / Prodi')
+                    ->placeholder('—')
+                    // Laboratorium tampil sebagai baris kedua; "—" bila ruang bukan milik lab
+                    ->description(fn(Room $record) => $record->laboratory?->name ?? '—')
+                    ->searchable(query: fn(Builder $query, string $search) => $query
+                        ->whereHas('unit', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('laboratory', fn($q) => $q->where('name', 'like', "%{$search}%")))
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('picUser.name')->label('PJ Ruang')->placeholder('—')->toggleable(),
 
