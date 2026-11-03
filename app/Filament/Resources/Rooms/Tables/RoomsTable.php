@@ -13,6 +13,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -119,12 +120,12 @@ class RoomsTable
                         : null)
                     ->disabled(fn(Room $record) => blank($record->public_code))
                     // Sejalan dengan pemeriksaan di KirController
-                    ->visible(fn(Room $record) => Auth::user()?->canSeeAllUnits()
-                        || (int) $record->unit_id === (int) Auth::user()?->unit_id
-                        || (int) $record->pic_user_id === (int) Auth::id()
+                    ->visible(fn(Room $record) => auth()->user()?->canSeeAllUnits()
+                        || (int) $record->unit_id === (int) auth()->user()?->unit_id
+                        || (int) $record->pic_user_id === (int) auth()->id()
                         || ($record->laboratory_id && in_array(
                             (int) $record->laboratory_id,
-                            array_map('intval', Auth::user()?->laboratoryIds() ?? []),
+                            array_map('intval', auth()->user()?->laboratoryIds() ?? []),
                             true,
                         )))
                     ->openUrlInNewTab(),
