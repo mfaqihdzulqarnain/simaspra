@@ -42,12 +42,13 @@ class RoomsTable
 
                 TextColumn::make('unit.name')
                     ->label('Unit / Prodi')
-                    ->placeholder('—')
-                    // Laboratorium tampil sebagai baris kedua; "—" bila ruang bukan milik lab
-                    ->description(fn(Room $record) => $record->laboratory?->name ?? '—')
-                    ->searchable(query: fn(Builder $query, string $search) => $query
-                        ->whereHas('unit', fn($q) => $q->where('name', 'like', "%{$search}%"))
-                        ->orWhereHas('laboratory', fn($q) => $q->where('name', 'like', "%{$search}%")))
+                    // ->placeholder('—')
+                    // // Laboratorium tampil sebagai baris kedua; "—" bila ruang bukan milik lab
+                    // ->description(fn(Room $record) => $record->laboratory?->name ?? '—')
+                    // ->searchable(query: fn(Builder $query, string $search) => $query
+                    //     ->whereHas('unit', fn($q) => $q->where('name', 'like', "%{$search}%"))
+                    //     ->orWhereHas('laboratory', fn($q) => $q->where('name', 'like', "%{$search}%")))
+                    ->description(fn(Room $record) => $record->floor ?? '—')
                     ->sortable()
                     ->toggleable(),
 
