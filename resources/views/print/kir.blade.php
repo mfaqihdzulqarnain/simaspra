@@ -1,7 +1,7 @@
 @php
     $rupiah = fn ($v) => number_format((float) $v, 0, ',', '.');
-    // Kolom isi tabel aset: nomor, kode, nama, kategori, tahun, kondisi, jumlah, (nilai)
-    $kolomAset = $denganNilai ? 8 : 7;
+    // Kolom: No, Kode Aset, Nama Barang, Thn, Kondisi/Jml, (Nilai)
+    $kolomAset = $denganNilai ? 6 : 5;
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -38,7 +38,10 @@
         table.data td.c { text-align: center; }
         table.data td.r { text-align: right; }
         table.data tfoot td { font-weight: bold; background: #F7F7F7; }
+
+        .kategori { font-size: 7.5pt; color: #444; }
         .merek { font-size: 7.5pt; color: #444; }
+        .jml { font-weight: bold; }
 
         p.catatan { font-size: 8pt; font-style: italic; color: #333; margin: 8pt 0 0; }
 
@@ -122,12 +125,10 @@
         <thead>
             <tr>
                 <th style="width:22pt">No</th>
-                <th style="width:85pt">Kode Aset</th>
+                <th style="width:100pt">Kode Aset</th>
                 <th>Nama Barang</th>
-                <th style="width:70pt">Kategori</th>
                 <th style="width:34pt">Thn</th>
-                <th style="width:58pt">Kondisi</th>
-                <th style="width:34pt">Jml</th>
+                <th style="width:62pt">Kondisi</th>
                 @if ($denganNilai)
                     <th style="width:82pt">Nilai (Rp)</th>
                 @endif
@@ -137,17 +138,21 @@
             @forelse ($assets as $i => $a)
                 <tr>
                     <td class="c">{{ $i + 1 }}</td>
-                    <td>{{ $a->code }}</td>
+                    <td>
+                        {{ $a->code }}
+                        <br><span class="kategori">({{ $a->category?->name ?? 'Tanpa kategori' }})</span>
+                    </td>
                     <td>
                         {{ $a->name }}
                         @if ($a->brand || $a->model)
                             <br><span class="merek">{{ collect([$a->brand, $a->model])->filter()->implode(' ') }}</span>
                         @endif
                     </td>
-                    <td>{{ $a->category?->name ?? '—' }}</td>
                     <td class="c">{{ $a->year_acquired ?? '—' }}</td>
-                    <td class="c">{{ $a->condition?->getLabel() ?? '—' }}</td>
-                    <td class="c">{{ max(1, (int) $a->quantity) }}</td>
+                    <td class="c">
+                        {{ $a->condition?->getLabel() ?? '—' }}
+                        <br><span class="jml">{{ max(1, (int) $a->quantity) }} unit</span>
+                    </td>
                     @if ($denganNilai)
                         <td class="r">{{ $rupiah($a->acquisition_value) }}</td>
                     @endif
@@ -161,8 +166,8 @@
         @if ($assets->isNotEmpty())
             <tfoot>
                 <tr>
-                    <td colspan="6" class="r">{{ $denganNilai ? 'Total' : 'Total Unit' }}</td>
-                    <td class="c">{{ $totalUnit }}</td>
+                    <td colspan="4" class="r">Total Unit</td>
+                    <td class="c">{{ $totalUnit }} unit</td>
                     @if ($denganNilai)
                         <td class="r">{{ $rupiah($totalNilai) }}</td>
                     @endif
@@ -178,10 +183,9 @@
             <thead>
                 <tr>
                     <th style="width:22pt">No</th>
-                    <th style="width:85pt">Kode</th>
+                    <th style="width:100pt">Kode</th>
                     <th>Nama Barang</th>
-                    <th style="width:70pt">Jenis</th>
-                    <th style="width:60pt">Stok</th>
+                    <th style="width:62pt">Stok</th>
                     @if ($denganNilai)
                         <th style="width:70pt">Harga Satuan</th>
                         <th style="width:82pt">Nilai (Rp)</th>
@@ -192,10 +196,12 @@
                 @foreach ($consumables as $i => $c)
                     <tr>
                         <td class="c">{{ $i + 1 }}</td>
-                        <td>{{ $c->code }}</td>
+                        <td>
+                            {{ $c->code }}
+                            <br><span class="kategori">({{ $c->type?->getLabel() ?? '—' }})</span>
+                        </td>
                         <td>{{ $c->name }}</td>
-                        <td class="c">{{ $c->type?->getLabel() ?? '—' }}</td>
-                        <td class="c">{{ $c->current_stock }} {{ $c->unit_of_measure }}</td>
+                        <td class="c jml">{{ $c->current_stock }} {{ $c->unit_of_measure }}</td>
                         @if ($denganNilai)
                             <td class="r">{{ $c->unit_price ? $rupiah($c->unit_price) : '—' }}</td>
                             <td class="r">
