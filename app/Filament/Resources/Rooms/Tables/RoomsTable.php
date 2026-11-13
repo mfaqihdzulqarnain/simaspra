@@ -6,6 +6,7 @@ use App\Filament\Pages\JadwalRuang;
 use App\Models\Room;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use App\Http\Controllers\KirController;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -117,15 +118,26 @@ class RoomsTable
                     ->button()
                     ->size('sm'),
 
-                Action::make('cetak_kir')
+            ActionGroup::make([
+                Action::make('kir_tanpa_nilai')
+                    ->label('Tanpa Nilai')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->url(fn(Room $record) => route('kir.print', $record))
+                    ->openUrlInNewTab(),
+
+                Action::make('kir_dengan_nilai')
+                        ->label('Dengan Nilai')
+                        ->icon(Heroicon::OutlinedBanknotes)
+                        ->url(fn(Room $record) => route('kir.print', [$record, 'nilai' => 1]))
+                        ->openUrlInNewTab()
+                        // Nominal hanya untuk Sarpras dan Admin
+                        ->visible(fn() => KirController::bolehNilai()),
+                ])
                     ->label('Cetak KIR')
                     ->icon(Heroicon::OutlinedPrinter)
                     ->color('gray')
-                    ->url(fn(Room $record) => $record->public_code
-                        ? route('kir.print', $record)
-                        : null)
-                    ->disabled(fn(Room $record) => blank($record->public_code))
-                    // Sejalan dengan pemeriksaan di KirController
+                    ->button()
+                    ->size('sm')
                     ->visible(fn(Room $record) => auth()->user()?->canSeeAllUnits()
                         || (int) $record->unit_id === (int) auth()->user()?->unit_id
                         || (int) $record->pic_user_id === (int) auth()->id()
@@ -133,8 +145,7 @@ class RoomsTable
                             (int) $record->laboratory_id,
                             array_map('intval', auth()->user()?->laboratoryIds() ?? []),
                             true,
-                        )))
-                    ->openUrlInNewTab(),
+                        ))),
                 EditAction::make()->label(''),
             ])
             ->toolbarActions([
