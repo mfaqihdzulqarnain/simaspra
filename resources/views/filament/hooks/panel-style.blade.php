@@ -72,6 +72,25 @@
         overflow: hidden;
     }
     .sp-brand-mark img { width: 78%; height: 78%; object-fit: contain; }
+
+    /* Logo gambar: tanpa kotak, latar transparan */
+    .sp-brand-mark-img {
+        background: transparent; box-shadow: none; border-radius: 0;
+        aspect-ratio: auto; overflow: visible;
+    }
+    .sp-brand-mark-img img { display: block; width: auto; height: 2.5rem; max-width: 100%; object-fit: contain; }
+    .fi-topbar-start .sp-brand-mark-img img,
+    .fi-sidebar-header .sp-brand-mark-img img { height: 2.25rem; max-width: 10rem; }
+    .fi-simple-header .sp-brand-mark-img img { height: 3rem; }
+
+    /* Versi logo sesuai latar */
+    .sp-logo-gelap { display: none !important; }
+    .dark .sp-logo-terang,
+    .fi-topbar-start .sp-logo-terang,
+    .fi-sidebar-header .sp-logo-terang { display: none !important; }
+    .dark .sp-logo-gelap,
+    .fi-topbar-start .sp-logo-gelap,
+    .fi-sidebar-header .sp-logo-gelap { display: block !important; }
     .sp-brand-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
     .sp-brand-name { font-weight: 800; font-size: 1rem; letter-spacing: .02em; color: var(--sp-text); }
     .sp-brand-sub {
@@ -86,15 +105,11 @@
     .fi-sidebar-header .sp-brand-name { color: #fff; }
     .fi-topbar-start .sp-brand-sub,
     .fi-sidebar-header .sp-brand-sub { color: var(--sp-side-muted); }
-    .fi-topbar-start .sp-brand-mark,
-    .fi-sidebar-header .sp-brand-mark { box-shadow: none; }
+    .fi-topbar-start .sp-brand-mark:not(.sp-brand-mark-img),
+    .fi-sidebar-header .sp-brand-mark:not(.sp-brand-mark-img) { box-shadow: none; }
 
     /* Pojok gelap kiri topbar: hanya logo (nama & sub pindah ke judul topbar) */
     .fi-topbar-start .sp-brand-text { display: none; }
-    .fi-topbar-start .sp-brand-mark {
-        aspect-ratio: auto; min-width: 2.5rem; padding-inline: .55rem;
-    }
-    .fi-topbar-start .sp-brand-mark img { width: auto; height: 74%; max-width: 9rem; }
 
     /* Judul di topbar, tepat di kanan sidebar */
     .sp-topbar-title {
@@ -191,12 +206,23 @@
             align-self: stretch;
             width: var(--sidebar-width);
             margin-inline-end: 1rem;
-            padding-inline: .75rem 1rem;
+            padding-inline: 0;
             gap: .25rem;
             background: var(--sp-side-bg);
             transition: width .2s ease;
         }
-        .fi-topbar-start .fi-logo { margin-inline-start: .25rem; }
+        .fi-topbar-start { position: relative; }
+
+        /* Tombol ciutkan menempel kiri, logo di tengah blok gelap */
+        .fi-topbar-start .fi-topbar-collapse-sidebar-btn-ctn {
+            position: absolute; inset-inline-start: .75rem; top: 50%; transform: translateY(-50%);
+            z-index: 1;
+        }
+        .fi-topbar-start > a {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            height: 100%; min-width: 0; padding-inline: 2.75rem;
+        }
+        .fi-topbar-start .fi-logo { margin: 0; height: auto !important; display: flex; align-items: center; justify-content: center; }
         .fi-topbar-start .fi-icon-btn,
         .fi-topbar-start .fi-icon { color: var(--sp-side-text); }
         .fi-topbar-start .fi-icon-btn:hover { background: var(--sp-side-hover); }
@@ -206,6 +232,9 @@
             width: var(--collapsed-sidebar-width);
             justify-content: center;
             padding-inline: 0;
+        }
+        .fi-body:has(.fi-main-sidebar:not(.fi-sidebar-open)) .fi-topbar-start .fi-topbar-collapse-sidebar-btn-ctn {
+            position: static; transform: none;
         }
         .fi-body:has(.fi-main-sidebar:not(.fi-sidebar-open)) .fi-topbar-start .fi-logo,
         .fi-body:has(.fi-main-sidebar:not(.fi-sidebar-open)) .fi-topbar-start > a { display: none; }
