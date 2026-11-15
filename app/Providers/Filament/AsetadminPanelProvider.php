@@ -46,7 +46,7 @@ class AsetadminPanelProvider extends PanelProvider
             ->brandName(fn () => Sapra::appName())
             // Blok merek: kotak logo + nama + institusi (resources/views/filament/brand.blade.php)
             ->brandLogo(fn (): View => view('filament.brand'))
-            ->brandLogoHeight('2.5rem')
+            ->brandLogoHeight('8.5rem')
             ->favicon(Sapra::favicon())
             ->colors([
                 'primary' => Color::hex(Sapra::primaryColor()),

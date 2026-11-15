@@ -77,28 +77,21 @@
         </div>
     </x-filament::section>
 
-    {{-- Kartu ringkas --}}
+        {{-- Kartu ringkas --}}
     @php
         $kartu = [
-            ['Total Peminjaman', $s['total_pinjaman'], 'Pada periode ini', '#14315C'],
-            ['Sedang Berjalan', $s['berjalan'], 'Alat di luar lab', '#2E90FA'],
-            ['Selesai', $s['selesai'], 'Sudah dikembalikan', '#12B76A'],
-            ['Terlambat', $s['terlambat'], $s['persen_terlambat'] . '% dari yang selesai', '#D92D20'],
-            ['Total Alat', $s['total_alat'], 'Tercatat aktif', '#14315C'],
-            ['Dapat Dipinjam', $s['alat_dipinjamkan'], 'Dari total alat', '#2E90FA'],
+            ['Total Peminjaman', $s['total_pinjaman'], 'Pada periode ini', 'primary', 'heroicon-o-clipboard-document-list'],
+            ['Sedang Berjalan', $s['berjalan'], 'Alat di luar lab', 'info', 'heroicon-o-arrow-path'],
+            ['Selesai', $s['selesai'], 'Sudah dikembalikan', 'success', 'heroicon-o-check-circle'],
+            ['Terlambat', $s['terlambat'], $s['persen_terlambat'].'% dari yang selesai', 'danger', 'heroicon-o-clock'],
+            ['Total Alat', $s['total_alat'], 'Tercatat aktif', 'primary', 'heroicon-o-cube'],
+            ['Dapat Dipinjam', $s['alat_dipinjamkan'], 'Dari total alat', 'info', 'heroicon-o-hand-raised'],
         ];
     @endphp
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1rem">
-        @foreach ($kartu as [$judul, $nilai, $ket, $hex])
-            <x-filament::section compact>
-                <p style="margin:0;font-size:12px;font-weight:500;opacity:.65">{{ $judul }}</p>
-                <p style="margin:6px 0 0;font-size:28px;font-weight:700;line-height:1;
-                          color:{{ $nilai > 0 ? $hex : 'rgba(128,128,128,.55)' }}">
-                    {{ $nilai }}
-                </p>
-                <p style="margin:6px 0 0;font-size:11px;opacity:.6">{{ $ket }}</p>
-            </x-filament::section>
+        @foreach ($kartu as [$label, $nilai, $ket, $nada, $ikon])
+            @include('filament.partials.kartu-stat', compact('label', 'nilai', 'ket', 'nada', 'ikon'))
         @endforeach
     </div>
 

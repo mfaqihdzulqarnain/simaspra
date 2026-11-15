@@ -36,28 +36,21 @@
         </x-filament::section>
     @endif
 
-    {{-- Kartu ringkas --}}
+        {{-- Kartu ringkas --}}
     @php
         $kartu = [
-            ['Menunggu', $s['menunggu'], 'Perlu disetujui', 'warning', '#F79009'],
-            ['Siap Diambil', $s['siap_ambil'], 'Sudah disetujui', 'info', '#2E90FA'],
-            ['Dipinjam', $s['dipinjam'], 'Sedang di luar', 'primary', '#14315C'],
-            ['Jatuh Tempo', $s['hari_ini'], 'Kembali hari ini', 'warning', '#F79009'],
-            ['Terlambat', $s['terlambat'], 'Perlu ditagih', 'danger', '#D92D20'],
-            ['Kerusakan', $s['kerusakan'], 'Belum ditindak', 'danger', '#D92D20'],
+            ['Menunggu', $s['menunggu'], 'Perlu disetujui', 'warning', 'heroicon-o-clock'],
+            ['Siap Diambil', $s['siap_ambil'], 'Sudah disetujui', 'info', 'heroicon-o-check-badge'],
+            ['Dipinjam', $s['dipinjam'], 'Sedang di luar', 'primary', 'heroicon-o-arrow-up-tray'],
+            ['Jatuh Tempo', $s['hari_ini'], 'Kembali hari ini', 'warning', 'heroicon-o-calendar-days'],
+            ['Terlambat', $s['terlambat'], 'Perlu ditagih', 'danger', 'heroicon-o-exclamation-triangle'],
+            ['Kerusakan', $s['kerusakan'], 'Belum ditindak', 'danger', 'heroicon-o-wrench-screwdriver'],
         ];
     @endphp
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:1rem">
-        @foreach ($kartu as [$label, $nilai, $ket, $warna, $hex])
-            <x-filament::section compact>
-                <p style="margin:0;font-size:12px;font-weight:500;opacity:.65">{{ $label }}</p>
-                <p style="margin:6px 0 0;font-size:30px;font-weight:700;line-height:1;
-                          color: {{ $nilai > 0 ? $hex : 'rgba(128,128,128,.55)' }}">
-                    {{ $nilai }}
-                </p>
-                <p style="margin:6px 0 0;font-size:11px;opacity:.6">{{ $ket }}</p>
-            </x-filament::section>
+        @foreach ($kartu as [$label, $nilai, $ket, $nada, $ikon])
+            @include('filament.partials.kartu-stat', compact('label', 'nilai', 'ket', 'nada', 'ikon'))
         @endforeach
     </div>
 
