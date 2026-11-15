@@ -89,6 +89,28 @@
     .fi-topbar-start .sp-brand-mark,
     .fi-sidebar-header .sp-brand-mark { box-shadow: none; }
 
+    /* Pojok gelap kiri topbar: hanya logo (nama & sub pindah ke judul topbar) */
+    .fi-topbar-start .sp-brand-text { display: none; }
+    .fi-topbar-start .sp-brand-mark {
+        aspect-ratio: auto; min-width: 2.5rem; padding-inline: .55rem;
+    }
+    .fi-topbar-start .sp-brand-mark img { width: auto; height: 74%; max-width: 9rem; }
+
+    /* Judul di topbar, tepat di kanan sidebar */
+    .sp-topbar-title {
+        order: 1; display: flex; flex-direction: column; justify-content: center;
+        min-width: 0; line-height: 1.2; padding-inline: .5rem;
+    }
+    .sp-topbar-name { font-weight: 700; font-size: 1rem; color: var(--sp-primary); }
+    .sp-topbar-sub {
+        font-size: .75rem; color: var(--sp-muted);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .dark .sp-topbar-name { color: #fff; }
+    .dark .sp-topbar-sub { color: rgba(255, 255, 255, .6); }
+    .fi-topbar-end { order: 2; }
+    @media (max-width: 639px) { .sp-topbar-sub { display: none; } }
+
     /* Halaman login / lupa sandi (ponsel): merek sedikit lebih besar */
     .fi-simple-header .fi-logo { height: 3rem !important; }
 
@@ -168,7 +190,7 @@
         .fi-topbar-start {
             align-self: stretch;
             width: var(--sidebar-width);
-            margin-inline-end: 1.25rem;
+            margin-inline-end: 1rem;
             padding-inline: .75rem 1rem;
             gap: .25rem;
             background: var(--sp-side-bg);
@@ -191,7 +213,14 @@
 
     /* ---------------------------- Kartu angka ------------------------------ */
 
-    .fi-wi-stats-overview-stat { padding: 1rem 1.125rem; border-radius: .875rem; }
+    .fi-wi-stats-overview-stat { padding: 1.125rem 1.125rem 1rem; border-radius: .875rem; }
+
+    /* Garis warna di atas setiap kartu */
+    .sp-stat { overflow: hidden; }
+    .sp-stat::before {
+        content: ""; position: absolute; inset-inline: 0; top: 0; height: 4px;
+        background: var(--sp-tone-line);
+    }
     .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-content { row-gap: .35rem; }
     .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label-ctn { padding-inline-end: 2.75rem; min-height: 2.25rem; }
     .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label { font-size: .8rem; line-height: 1.1rem; }
@@ -206,13 +235,13 @@
         background: var(--sp-tone-bg); color: var(--sp-tone-fg);
     }
 
-    .sp-tone-primary { --sp-tone-bg: var(--sp-soft); --sp-tone-fg: var(--sp-primary); }
-    .sp-tone-success { --sp-tone-bg: #DCFAE6; --sp-tone-fg: #067647; }
-    .sp-tone-warning { --sp-tone-bg: #FEF0C7; --sp-tone-fg: #B54708; }
-    .sp-tone-danger  { --sp-tone-bg: #FEE4E2; --sp-tone-fg: #B42318; }
-    .sp-tone-gray    { --sp-tone-bg: #F2F4F7; --sp-tone-fg: #667085; }
+    .sp-tone-primary { --sp-tone-bg: var(--sp-soft); --sp-tone-fg: var(--sp-primary); --sp-tone-line: var(--sp-primary); }
+    .sp-tone-success { --sp-tone-bg: #DCFAE6; --sp-tone-fg: #067647; --sp-tone-line: #12B76A; }
+    .sp-tone-warning { --sp-tone-bg: #FEF0C7; --sp-tone-fg: #B54708; --sp-tone-line: #F79009; }
+    .sp-tone-danger  { --sp-tone-bg: #FEE4E2; --sp-tone-fg: #B42318; --sp-tone-line: #F04438; }
+    .sp-tone-gray    { --sp-tone-bg: #F2F4F7; --sp-tone-fg: #667085; --sp-tone-line: var(--sp-accent); }
 
-    .dark .sp-tone-primary { --sp-tone-bg: rgba(255, 255, 255, .08); --sp-tone-fg: var(--sp-accent); }
+    .dark .sp-tone-primary { --sp-tone-bg: rgba(255, 255, 255, .08); --sp-tone-fg: var(--sp-accent); --sp-tone-line: var(--sp-accent); }
     .dark .sp-tone-success { --sp-tone-bg: rgba(18, 183, 106, .15); --sp-tone-fg: #47CD89; }
     .dark .sp-tone-warning { --sp-tone-bg: rgba(247, 144, 9, .15); --sp-tone-fg: #FDB022; }
     .dark .sp-tone-danger  { --sp-tone-bg: rgba(240, 68, 56, .15); --sp-tone-fg: #F97066; }

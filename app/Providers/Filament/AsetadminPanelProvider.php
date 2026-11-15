@@ -43,9 +43,9 @@ class AsetadminPanelProvider extends PanelProvider
             ->profile()
             ->passwordReset()
             ->spa()
-            ->brandName(fn() => Sapra::appName())
+            ->brandName(fn () => Sapra::appName())
             // Blok merek: kotak logo + nama + institusi (resources/views/filament/brand.blade.php)
-            ->brandLogo(fn(): View => view('filament.brand'))
+            ->brandLogo(fn (): View => view('filament.brand'))
             ->brandLogoHeight('2.5rem')
             ->favicon(Sapra::favicon())
             ->colors([
@@ -56,11 +56,16 @@ class AsetadminPanelProvider extends PanelProvider
             // Gaya panel: sidebar gelap ikut tema, tampilan padat, kartu angka
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn(): View => view('filament.hooks.panel-style'),
+                fn (): View => view('filament.hooks.panel-style'),
+            )
+            // Nama aplikasi + institusi di topbar, kanan sidebar
+            ->renderHook(
+                PanelsRenderHook::TOPBAR_START,
+                fn (): View => view('filament.hooks.topbar-title'),
             )
             ->renderHook(
                 PanelsRenderHook::SIMPLE_LAYOUT_START,
-                fn(): View => view('filament.auth.login-aside'),
+                fn (): View => view('filament.auth.login-aside'),
                 scopes: [\Filament\Auth\Pages\Login::class],
             )
             // Navigasi samping (bukan atas), bisa diciutkan di desktop
@@ -68,7 +73,7 @@ class AsetadminPanelProvider extends PanelProvider
             ->sidebarWidth('16rem')
             ->maxContentWidth(Width::Full)
             // Beranda awal sesuai hak akses
-            ->homeUrl(fn(): string => match (true) {
+            ->homeUrl(fn (): string => match (true) {
                 Dashboard::canView() => Dashboard::getUrl(),
                 BerandaLaboran::canAccess() => BerandaLaboran::getUrl(),
                 default => BerandaSaya::getUrl(),
@@ -77,7 +82,7 @@ class AsetadminPanelProvider extends PanelProvider
                 Action::make('halaman_depan')
                     ->label('Halaman Depan')
                     ->icon('heroicon-o-globe-alt')
-                    ->url(fn(): string => url('/'), shouldOpenInNewTab: true),
+                    ->url(fn (): string => url('/'), shouldOpenInNewTab: true),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
